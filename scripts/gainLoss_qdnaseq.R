@@ -16,7 +16,7 @@ suppressPackageStartupMessages({
 
 # Inputs
 segs15kb <- '~/Documents/projects/cn_signatures_shallowWGS/qdnaseq_copy_number/batch_1-13/Xchr_included/15kb_copyNumbersSegmented.rds'
-segs30kb <- '~/Documents/projects/cn_signatures_shallowWGS/qdnaseq_copy_number/batch_1-13/autosomes_only/30kb_rCN_comCNVfilt.rds'
+segs30kb <- '~/Documents/projects/cn_sigs_swgs/copy_number_objects/autosomes_only/30kb_copyNumbersSegmented.rds'
 segs30kb <- '~/Documents/projects/cn_signatures_shallowWGS/qdnaseq_copy_number/batch_1-13/Xchr_included/30kb_gl_rCN.rds'
 segs50kb <- '~/Documents/projects/cn_signatures_shallowWGS/qdnaseq_copy_number/batch_1-11/Xchr_included/50kb_gl_rCN.rds'
 segs100kb <- '~/Documents/projects/cn_signatures_shallowWGS/qdnaseq_copy_number/batch_1-11/Xchr_included/100kb_gl_rCN.rds'
