@@ -24,7 +24,7 @@ nsmp_cel <- read.table(file = nsmp_cel, sep = '\t', header = TRUE)
 all_survival <- all_survival %>% dplyr::select(study_id, eclass, eclass2)
 colnames(all_survival) <- c('sample_id', 'status', 'eclass2')
 
-exp_anno <- exp_anno %>% dplyr::mutate(sample_id = metD$sample_id) %>% 
+exp_anno <- exp_anno %>% dplyr::mutate(sample_id = metD$sample_id) %>%
                          dplyr::select(sample_id, cancer_type, status, batch)
 # exp_anno <- exp_anno %>% left_join(all_survival, by=c('sample_id'))
 
@@ -43,14 +43,14 @@ exp_anno <- exp_anno %>% dplyr::mutate(sample_id = metD$sample_id) %>%
 # met_5to12$batch[met_5to12$batch == 'HRD-pool11'] <- 12
 # met_5to12 <- met_5to12 %>% transform(batch = as.integer(batch))
 
-tp53_cel <- tp53_cel %>% dplyr::select(Study.ID, Cellularity.ET...., VAF, VAF.1, VAF.2, VAF.3, VAF.4, VAF.5) %>% 
+tp53_cel <- tp53_cel %>% dplyr::select(Study.ID, Cellularity.ET...., VAF, VAF.1, VAF.2, VAF.3, VAF.4, VAF.5) %>%
                           transform(VAF.4 = as.character(VAF.4), VAF.5 = as.character(VAF.5))
-nsmp_cel <- nsmp_cel %>% dplyr::select(Study.ID, Cellularity.ET...., VAF, VAF.1, VAF.2, VAF.3, VAF.4, VAF.5) %>% 
+nsmp_cel <- nsmp_cel %>% dplyr::select(Study.ID, Cellularity.ET...., VAF, VAF.1, VAF.2, VAF.3, VAF.4, VAF.5) %>%
                           transform(VAF = as.character(VAF), VAF.3 = as.character(VAF.3), VAF.5 = as.character(VAF.5))
 cellularity <- bind_rows(tp53_cel, nsmp_cel)
 colnames(cellularity) <- c('sample_id', 'cellularity', 'pole.vaf', 'tp53.vaf', 'pik3ca.vaf', 'ctnnb1.vaf', 'pten.vaf', 'kras.vaf')
 # cellularity <- cellularity %>% left_join(all_survival, by=c('sample_id'))
-  
+
 # Cleaning entries
 exp_anno <- exp_anno %>% dplyr::filter(str_sub(sample_id,-1,-1) != 'N')
 exp_anno$sample_id[str_sub(exp_anno$sample_id,-2,-1) == '-T'] <- str_sub(exp_anno$sample_id,1,11)[str_sub(exp_anno$sample_id,-2,-1) == '-T']
@@ -94,17 +94,17 @@ annos <- read_tsv(file = annos)
 
 fastqs <- '~/Documents/projects/cn_signatures_shallowWGS/metadata/toIntegrateTransform/fastqs_batches_1to13.tsv'
 fastqs <- read.table(file = fastqs, sep = '\t', header = TRUE)
-fastqs <- fastqs %>% 
-            mutate(variable = rep(c("forward", "backward"), nrow(fastqs) / 2), 
+fastqs <- fastqs %>%
+            mutate(variable = rep(c("forward", "backward"), nrow(fastqs) / 2),
               key = rep(1:(nrow(fastqs) / 2), each = 2)) %>%
-            pivot_wider(id_cols = key, names_from = variable, values_from = paths) %>% 
+            pivot_wider(id_cols = key, names_from = variable, values_from = paths) %>%
             select(-key)
 fastqs <- cbind(as.data.frame(str_split_fixed(fastqs$forward, "/", 9)), fastqs$forward, fastqs$backward)
 fastqs[,c(1:6, 8:9)] <- NULL
 colnames(fastqs) <- c('library', 'fastq_path_1', 'fastq_path_2')
 
-strReverse <- function(x) { 
-  sapply(lapply(strsplit(x, NULL), rev), paste, collapse="") 
+strReverse <- function(x) {
+  sapply(lapply(strsplit(x, NULL), rev), paste, collapse="")
 }
 add_rev_col <- function(batch_anno) {
   batch_anno <- read.table(file = batch_anno, sep = '\t', header = TRUE)
@@ -209,7 +209,7 @@ segs <- readRDS("~/Documents/projects/cn_signatures_shallowWGS/qdnaseq_copy_numb
 segs <- readRDS("~/Documents/projects/cn_signatures_shallowWGS/qdnaseq_copy_number/batch_1-13/autosomes_only/30kb_comCNVfilt_rascal_CN_Collapsed_segments_optimalVAF.rds")
 save_path <- '~/Documents/projects/cn_sigs_swgs/plotting/cnv_heatmaps/'
 obj_name <- 'pancan_UCEC_endometrioid_100kb_absolute'
-  
+
 # Just p53abn
 qual <- data.table::fread(file = '~/Downloads/swgs_sample_biologic_metadata.csv', sep = ',', header = TRUE)
 vafcel <- data.table::fread(file = '~/Documents/projects/cn_signatures_shallowWGS/metadata/vafs_and_cellularities.tsv', sep = '\t', header = TRUE)
@@ -223,13 +223,13 @@ segs_1 <- absolute_called_segments_tcga_pancan_374[names(absolute_called_segment
 # convert segs to long format table (per-bin CNs)
 copy_numbers <- segments_to_copy_number(segs_1, 100000)
 
-# Run 
+# Run
 setDT(copy_numbers)
 swgs_cnv_heatmaps(copy_numbers, save_path, obj_name)
 plot_cellularity_and_maxvaf(copy_numbers, save_path, obj_name)
 plot_BABAM(copy_numbers, save_path, obj_name)
 
-# Retrieve comparable bin CNs & annotations 
+# Retrieve comparable bin CNs & annotations
 obj1 <- readRDS(file = '~/Documents/projects/cn_signatures_shallowWGS/qdnaseq_copy_number/batch_1-13/Xchr_included/30kb_copyNumbersSegmented.rds')
 obj2 <- readRDS(file = '~/Documents/projects/cn_signatures_shallowWGS/qdnaseq_copy_number/batch_1-13/Xchr_included/30kb_gl_rCN.rds')
 obj3 <- readRDS(file = '~/Documents/projects/cn_signatures_shallowWGS/qdnaseq_copy_number/batch_1-13/Xchr_included/30kb_rCN_comCNVfilt.rds')
@@ -247,12 +247,12 @@ compare_mat <- data.frame(snames = colnames(testmat1@fit@H),
                           correlation = mapply(cor, as.data.frame(testmat1@fit@H), as.data.frame(testmat2@fit@H)))
 compare_mat <- compare_mat %>% arrange(max_basis_1)
 compare_mat$snames <- factor(compare_mat$snames, levels = compare_mat$snames)
-g <- ggplot(compare_mat, aes(snames, c('1'), fill=correlation)) +  
+g <- ggplot(compare_mat, aes(snames, c('1'), fill=correlation)) +
   geom_tile() +
   scale_fill_viridis(discrete=FALSE) +
-  theme(plot.title = element_text(size=20), 
+  theme(plot.title = element_text(size=20),
         axis.text.x = element_text(size = 10, angle = 75, vjust = 0.5, hjust=0.5),
-        axis.text.y = element_text(size = 10)) + 
+        axis.text.y = element_text(size = 10)) +
   labs(x = NULL, y = NULL) +
   ggtitle("Per sample correlations", )
 g
@@ -274,3 +274,94 @@ path_ai <- path_ai[-todel,]
 met <- met %>% dplyr::filter(status == 'NSMP') %>% dplyr::select(!c(quality,sequence:fastq_path_2))
 
 met <- left_join(met, path_ai, by = c('sample_id' = 'study_id'))
+
+
+############################
+############################
+### Agglomerate shallowHRD status calls on QDNAseq CN calls
+############################
+############################
+
+swgs_files <- list.files('~/Documents/projects/cn_sigs_swgs/shallowHRDoutput', full.names = T)
+
+shallowHRDtable <- data.frame()
+for (i in swgs_files) {
+  samplename <- sub(i, pattern = '/Users/mdouglas/Documents/projects/cn_sigs_swgs/shallowHRDoutput/', replacement = '')
+  samplename <- sub(samplename, pattern = '_summary_table.tsv', replacement = '')
+  atable <- data.table::fread(file = i, sep = '\t', header = F)
+  arow <- as.data.frame(c(samplename, atable[7,2], atable[6,2]))
+  colnames(arow) <- c('sample_id', 'hrd_status', 'nLGAs')
+  shallowHRDtable <- rbind(shallowHRDtable, arow)
+}
+
+shallowHRDtable$hrd_status[shallowHRDtable$hrd_status == 'No (< 15)'] <- 'No'
+shallowHRDtable$hrd_status[shallowHRDtable$hrd_status == 'Borderline [15;19]'] <- 'Borderline'
+shallowHRDtable$hrd_status[shallowHRDtable$hrd_status == 'Yes (>= 20)'] <- 'Yes'
+write.table(shallowHRDtable, file = '~/Documents/projects/cn_sigs_swgs/metadata/30kb_shallowHRD.tsv', sep = '\t', col.names = T, row.names = F)
+
+
+############################
+############################
+### Generate shallowHRD Input files
+############################
+############################
+
+input_object <- readRDS(file = '~/Documents/projects/cn_sigs_swgs/copy_number_objects/wisecondorX_Xchr_included/30kb_rCN_comCNVfilt.rds')
+temp_path <- "~/Documents/projects/cn_sigs_swgs/copy_number_objects/wisecondorX_Xchr_included"
+output_path <- "~/Documents/projects/cn_sigs_swgs/shallowHRD/wiseX_inputfiles"
+
+create_shallowHRDinput(input_object, temp_path, output_path)
+
+
+############################
+############################
+### Generate Human Readable Copy-Number Profiles for use by wetlab researchers
+############################
+############################
+
+ccnvFILT_obj <- readRDS(file = '~/Documents/projects/cn_sigs_swgs/copy_number_objects/Xchr_included/30kb_rCN_comCNVfilt.rds')
+acn_obj <- readRDS(file = '~/Documents/projects/cn_sigs_swgs/copy_number_objects/Xchr_included/30kb_comCNVfilt_rascal_CN_Collapsed_segments_optimalVAF.rds')
+obj1 <- genHumanReadableRCNprofile(ccnvFILT_obj, '30kb')
+obj1 <- genHumanReadableACNprofile(acn_obj, '~/Documents/projects/cn_sigs_swgs/data/comCNV_filtered_segs_and_cytoband_tables_Xchr_included/')
+
+# Scratch
+test <- data.frame(chr = cgh15kb@featureData@data[["Chromosome"]],
+                   CC.VGH.0033a = cgh15kb@assayData[["segmented"]][,1],
+                   start = cgh15kb@featureData@data[["Start"]],
+                   end = cgh15kb@featureData@data[["End"]])
+
+
+############################
+############################
+### Make filtered CN Summary Tables (combines several samples)
+### Useful output type for researchers and manual analysis
+############################
+############################
+
+# Input
+ccnvFILT_obj <- readRDS(file = '~/Documents/projects/cn_sigs_swgs/copy_number_objects/Xchr_included/30kb_rCN_comCNVfilt.rds')
+# Output
+save_path <- '~/Documents/projects/cn_sigs_swgs/data/summaryTables/NSMP_samples_batches1-13.tsv'
+# List of samples for which data is desired
+# Pay attention to the formatting! Its important!
+samples_of_interest <- c('CC-VGH-1176', 'CC-VGH-1187',
+                         'CC-VGH-1190', 'CC-VGH-1196',
+                         'CC-VGH-1239', 'CC-VGH-1264',
+                         'CC-VGH-1293', 'CC-VGH-1302',
+                         'CC-VGH-0033a', 'CC-VGH-1181')
+
+# Probability of gain or loss threshold - i.e. declare the minimum mean probability of loss or gain across samples
+# Expl. For region Chr1:2850001-2865000, and probabilities of loss for 10 samples of:
+# 0.814 0 0 0 0 0.125 0.975 0 0 0
+# The mean probability of loss would be 0.1914
+prob_loss <- 0.2
+prob_gain <- 0.2
+# Log space relative copy number thresholds
+low_threshold <- -0.2
+high_threshold <- 0.2
+# Presence threshold - i.e. In what minimum proportion of samples does the gain or loss need to be present?
+proportion_threshold <- 0.2
+
+# Run command
+make_summary_table(ccnvFILT_obj, samples_of_interest, low_threshold, high_threshold, prob_loss, prob_gain, proportion_threshold, save_path)
+

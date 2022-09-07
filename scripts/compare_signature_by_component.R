@@ -1,10 +1,13 @@
 # Compare Copy Number Signatures Across Cohorts
 # May 19th, 2021
-# 
+#
 # Input:
 # Change from a list of Component-by-Signature Matrices from NMFfit objects to the NMFfit objects themselves.
 # This change will permit for easier plotting.
 # This means that NMFfit objects must be saved in the cn_signatures_pilot.R script.
+
+
+# NEEDS TO BE TURNED INTO A VIGNETTE FOR THE UTANOS PACKAGES
 
 suppressPackageStartupMessages({
   library(stringr)
@@ -26,8 +29,14 @@ source(file = '~/repositories/cnsignatures/scripts/main_functions.R')
 source(file = '~/repositories/cnsignatures/scripts/helper_functions.R')
 
 
+
+# NEEDS TO BE TURNED INTO A VIGNETTE FOR THE UTANOS PACKAGES
+
+
+
+
 compare_signature_by_component <- function (cs_matrix_list, mat_names, saveFile) {
-  
+
   nsig <- 7
   # britroc feat_sig matrix
   feat_sig_mat<-basis(cs_matrix_list[[1]])
@@ -37,29 +46,29 @@ compare_signature_by_component <- function (cs_matrix_list, mat_names, saveFile)
   feat_sig_mat<-feat_sig_mat[,reord_1]
   colnames(feat_sig_mat)<-paste0("s",1:nsig)
   sig_feat_mat<-t(feat_sig_mat)
-  
+
   # Second feat_sig matrix
   feat_sig_mat_2<-basis(cs_matrix_list[[2]])
   colnames(cs_matrix_list[[2]]@fit@W) <- c('s1', 's2', 's3', 's4', 's5', 's6', 's7')
   sig_feat_mat_2<-t(feat_sig_mat_2)
   colnames(feat_sig_mat_2)<-paste0("s",1:nsig)
-  
+
   # Third feat_sig matrix
   feat_sig_mat_3<-basis(cs_matrix_list[[3]])
   colnames(cs_matrix_list[[3]]@fit@W) <- c('s1', 's2', 's3', 's4', 's5', 's6', 's7')
   sig_feat_mat_3<-t(feat_sig_mat_3)
   colnames(feat_sig_mat_3)<-paste0("s",1:nsig)
-  
-  # browser()  
+
+  # browser()
   # determine matching signatures and their correlation
   # reord_2<-apply(feat_sig_mat,2,function(x){which.max(apply(feat_sig_mat_2,2,cor,x,method="s"))})
   # sigcor_2<-apply(feat_sig_mat,2,function(x){max(apply(feat_sig_mat_2,2,cor,x,method="s"))})
   reord_2 <- as.integer(c(2,3,4,5,6,7,1))
-  
+
   # reord_3<-apply(feat_sig_mat,2,function(x){which.max(apply(feat_sig_mat_3,2,cor,x,method="s"))})
   # sigcor_3<-apply(feat_sig_mat,2,function(x){max(apply(feat_sig_mat_3,2,cor,x,method="s"))})
   reord_3 <- as.integer(c(1,5,2,7,3,6,4))
-  
+
   # plot the feat_sig matrices side by side
   pdf(file = saveFile, 10, 7, onefile = FALSE)
   par(mfrow=c(1,3))

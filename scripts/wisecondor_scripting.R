@@ -6,13 +6,13 @@ library(data.table)
 library(Biobase)
 library(QDNAseq)
 
-swgs_dirs <- list.dirs('~/Documents/projects/cn_sigs_swgs/copy_number_objects/wisecondorX_Xchr_included')
+swgs_dirs <- list.dirs('~/Downloads/npzs_redo')
 swgs_dirs <- swgs_dirs[2:length(swgs_dirs)]
-samplenames <- sub(swgs_dirs, pattern = '/Users/mdouglas/Documents/projects/cn_sigs_swgs/copy_number_objects/wisecondorX_Xchr_included/', replacement = '')
+samplenames <- sub(swgs_dirs, pattern = '/Users/mdouglas/Downloads/npzs_redo/', replacement = '')
 samplenames <- sub(samplenames, pattern = '.plots', replacement = '')
 
 for (i in swgs_dirs) {
-  samplename <- sub(i, pattern = '/Users/mdouglas/Documents/projects/cn_sigs_swgs/copy_number_objects/wisecondorX_Xchr_included/', replacement = '')
+  samplename <- sub(i, pattern = '/Users/mdouglas/Downloads/npzs_redo/', replacement = '')
   samplename <- sub(samplename, pattern = '.plots', replacement = '')
   system(command = paste('mv', paste0(i, '/genome_wide.png'), paste0(i, '/', samplename, '_plot.png')))
   print(paste('mv', paste0(i, '/genome_wide.png'), paste0(i, '/', samplename, '_plot.png')))
@@ -120,6 +120,8 @@ plotWisecondorProfiles <- function (input_path) {
   wx_qdnaobj <- new('QDNAseqCopyNumbers', bins=bins, copynumber=copynumbers,
                 phenodata=stats)
   assayDataElement(wx_qdnaobj, "segmented") <- segments
+  
+  browser()
   plot(wx_qdnaobj[,1], logTransform=FALSE, ylim=c(-3, 5))
   plot(wx_qdnaobj[,2], logTransform=FALSE, ylim=c(-3, 5))
   
@@ -149,6 +151,7 @@ plotWisecondorProfiles <- function (input_path) {
   result
 }
 
-
-input_path <- '~/Documents/projects/cn_sigs_swgs/copy_number_objects/wisecondorX_Xchr_included'
+nsmpgroup <- c('EC053', 'EC070', 'EC083', 'VOA658', 'VOA707', 'VOA844', 'EC019', 
+               'EC059', 'EC146', 'VOA1111', 'VS03-21607', 'VS05-32611', 'VS06-19921')
+input_path <- '~/Documents/projects/cn_sigs_swgs/wisecondorX_QDNA_output_comparison/raw_wisecondorX_output/'
 plotWisecondorProfiles(input_path)

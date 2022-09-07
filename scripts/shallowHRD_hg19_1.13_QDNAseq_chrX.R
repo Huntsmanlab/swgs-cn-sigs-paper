@@ -1,5 +1,7 @@
 ##### SCRIPT : shallowHRD_hg19 #####
-
+##### This script has been modified from the published script found here:
+##### https://github.com/aeeckhou/shallowHRD
+##### Lines 5580 and 5581 contains  statement to print output that wasn't originally printed.
 
 args = commandArgs(trailingOnly=TRUE)
 
