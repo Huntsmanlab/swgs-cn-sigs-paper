@@ -4,6 +4,7 @@ library(tidyr)
 library(ggplot2)
 library(stringr)
 library(readr)
+library(magrittr)
 
 
 ####################################
@@ -50,11 +51,11 @@ test <- test[,c(1:7)]
 
 # Filter out certain batches if wanted
 test <- test %>% filter(batch == 3)
-  
+
 # Give the chart file a name.
 png(file = "~/Documents/projects/cn_signatures_shallowWGS/qdnaseq_copy_number/batch_1234/Xchr_included/NrascalSols_batch3_line_chart.png", width = 700, height = 700)
 # Plot the bar chart.
-plot(test$`15kb`,type = "o",col = "red", xlab = "Sample", ylab = "Solution Number", 
+plot(test$`15kb`,type = "o",col = "red", xlab = "Sample", ylab = "Solution Number",
      main = "Number of rascal solutions for samples by bin size", ylim = c(0,18))
 lines(test$`30kb`, type = "o", col = "orange")
 lines(test$`50kb`, type = "o", col = "blue")
@@ -72,8 +73,8 @@ dev.off()
 rascal_batch_solutions <- read.table(file = "~/Documents/projects/cn_signatures_shallowWGS/qdnaseq_copy_number/batch_1234/Xchr_included/500kb_rascal_solutions.csv", sep = ',', header = TRUE)
 rascal_batch_solutions$sample <- str_replace_all(rascal_batch_solutions$sample, "-", ".")
 
-test3 <- rascal_batch_solutions %>% 
-  group_by(sample) %>% 
+test3 <- rascal_batch_solutions %>%
+  group_by(sample) %>%
   summarise(avg = round(10*(((1-distance)-min(1-distance)+0.01)/sum((1-distance)-min(1-distance)+0.01))))
 weighted_sols <- data.frame(sample = rep(rascal_batch_solutions$sample, test3$avg), copy_numbers = rep(rascal_batch_solutions$ploidy, test3$avg), cellularity = rep(rascal_batch_solutions$cellularity, test3$avg))
 write_csv(weighted_sols, file = '/Users/maxwell/Documents/projects/cn_signatures_shallowWGS/qdnaseq_copy_number/batch_1234/Xchr_included/500kb_rascal_multisolutions.csv', col_names = TRUE)
@@ -89,12 +90,28 @@ getOptimalMADSolutions(input_file = solutions, rcn_file = rcn_segs, segs_file = 
 ##############
 ## Add VAF column to rascal solutions and create corresponding segs table
 ##############
-solutions <- "~/Documents/projects/cn_signatures_shallowWGS/qdnaseq_copy_number/batch_1-13/Xchr_included/30kb_comCNVfilt_rascal_solutions.csv"
-rcn_segs <- "~/Documents/projects/cn_signatures_shallowWGS/qdnaseq_copy_number/batch_1-13/autosomes_only/30kb_rCN_comCNVfilt.tsv"
+solutions <- "~/Documents/projects/cn_sigs_swgs/copy_number_objects/Xchr_included/30kb_comCNVfilt_rascal_solutions.csv"
+rcn_segs <- "~/Documents/projects/cn_sigs_swgs/copy_number_objects/Xchr_included/30kb_rCN_comCNVfilt.tsv"
+rcn_segs <- "~/Documents/projects/cn_sigs_swgs/copy_number_objects/wisecondorX_Xchr_included/30kb_rCN_comCNVfilt.rds"
 acn_segs_save_path <- "~/Documents/projects/cn_signatures_shallowWGS/qdnaseq_copy_number/batch_1-13/Xchr_included/30kb_comCNVfilt_rascal_CN_Collapsed_segments_optimalVAF.rds"
 vaf_table <- '~/Documents/projects/cn_signatures_shallowWGS/metadata/vafs_and_cellularities.tsv'
-calculate_vaf_acns(solutions, rcn_segs, acn_segs_save_path, vaf_table)
+vaf_table <- '~/Documents/projects/cn_signatures_shallowWGS/metadata/vafs_and_cellularities.tsv'
+variants <- '~/Documents/projects/cn_sigs_swgs/targeted_panel_seq/gatk_and_annotation_output/allvariants_20221118.clinvar.cosmic.exons.csv'
+variants <- data.table::fread(file = variants, sep = ',')
+variants <- variants %>% dplyr::rename(chromosome = chr,
+                                       gene_name = genecode_gene_name)
+variants$sample_id <- stringr::str_replace_all(variants$sample_id, "-", ".")
 
+# CalculateACNs(rcn_segs, solutions, acn_segs_save_path, variants)
+output2 <- CalculateACNs(relative_cns = rcn_segs,
+              rascal_sols = solutions,
+              variants = variants,
+              acnmethod = 'maxvaf')
+output <- CalculateACNs(relative_cns = rcn_segs,
+                        rascal_sols = solutions,
+                        variants = variants,
+                        acnmethod = c('TP53', 'KRAS', 'BRCA1',
+                                      'BRCA2', 'PIK3CA', 'PTEN'))
 ####################################
 # Create CN-Collapsed Segment Tables
 # Single chosen solutions
