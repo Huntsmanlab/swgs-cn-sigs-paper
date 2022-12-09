@@ -149,6 +149,8 @@ GenVafAcns <- function (segments, rascal_batch_solutions, variants) {
 ####################
 # Refactoring - create a new QDNAseq object out of multiple other QDNAseq objects
 ####################
+QD_X <- readRDS(file = '~/Documents/projects/cn_sigs_swgs/copy_number_objects/qdnaseq_Xchr_included/30kb_rCN_comCNVfilt.rds')
+WX_X <- readRDS(file = '~/Documents/projects/cn_sigs_swgs/copy_number_objects/wisecondorX_Xchr_included/30kb_rCN_comCNVfilt.rds')
 
 sample_selections <- '~/Documents/projects/cn_sigs_swgs/quality/sample_quality_decision_caller.csv'
 sample_selections <- data.table::fread(sample_selections, sep = ',', header = TRUE)
@@ -161,39 +163,86 @@ BestRelProfile <- function (selection, robjects) {
     stop("Please pass a minimum of two QDNAseq objects to this function.")
   }
 
-  browser()
   feature_lengths <- sapply(robjects, nrow)
   idx <- which.max(feature_lengths)
+  n <- dim(selection)[1]
   dim_names <- rownames(robjects[[idx]]@assayData[["copynumber"]])
   template <- matrix(NA_real_,
                      nrow=max(feature_lengths),
                      ncol=dim(selection)[1],
                      dimnames=list(dim_names, selection$sample_id))
-  cns <- c()
-  segs <- c()
+  tbins <- as.data.frame(stringr::str_split(dim_names, pattern = ':|-', simplify = TRUE))
+  colnames(bins) <- c('chromosome', 'start', 'end')
+  tbins <- tbins %>% dplyr::filter(chromosome != 'Y')
+  cns <- tbins
+  segs <- tbins
+  objstats <- selection
   for (i in names(robjects)) {
-    robjects[[i]]@assayData[["copynumber"]]
-    tempmat <- robjects[[i]]@assayData[["copynumber"]][,colnames(robjects[[i]]@assayData[["copynumber"]]) %in% selection$sample_id]
-    tempmat <- tempmat[,selection$sample_id]
-    tempmat <- tempmat[,selection$selection == i]
-    cns <- cbind(cns, tempmat)
 
-    robjects[[i]]@assayData[["segmented"]]
-    tempmat <- robjects[[i]]@assayData[["segmented"]][,colnames(robjects[[i]]@assayData[["segmented"]]) %in% selection$sample_id]
+    # Pull what needed out of each object in turn to fill the new slots for:
+    # copy-number
+    mask <- robjects[[i]]@phenoData@data[["name"]] %in% selection$sample_id
+    tempmat <- robjects[[i]]@assayData[["copynumber"]][,mask]
     tempmat <- tempmat[,selection$sample_id]
     tempmat <- tempmat[,selection$selection == i]
-    segs <- cbind(segs, tempmat)
+    tempmat <- cbind(as.data.frame(tempmat),
+                     as.data.frame(stringr::str_split(dim_names,
+                                                      pattern = ':|-',
+                                                      simplify = TRUE)))
+    tempmat <- tempmat %>% dplyr::rename(chromosome = V1, start = V2, end = V3)
+    cns <- cns %>% dplyr::left_join(tempmat, by = c('chromosome' = 'V1',
+                                                    'start' = 'V2',
+                                                    'end' = 'V3'))
+    # segments
+    tempmat <- robjects[[i]]@assayData[["segmented"]][,mask]
+    tempmat <- tempmat[,selection$sample_id]
+    tempmat <- tempmat[,selection$selection == i]
+    tempmat <- cbind(as.data.frame(tempmat),
+                     as.data.frame(stringr::str_split(dim_names,
+                                                      pattern = ':|-',
+                                                      simplify = TRUE)))
+    tempmat <- tempmat %>% dplyr::rename(chromosome = V1, start = V2, end = V3)
+    segs <- segs %>% dplyr::left_join(tempmat, by = c('chromosome' = 'V1',
+                                                      'start' = 'V2',
+                                                      'end' = 'V3'))
+    # stats
+    objstats <- rbind(objstats,
+                      robjects[[i]]@phenoData@data[mask, c('total.reads',
+                                                           'expected.variance')])
+
   }
 
   # Create copy-numbers array
-  copynumbers <- matrix(NA_real_, nrow=nrow(cns_wide), ncol=length(bin_files),
-                        dimnames=list(dim_names, samples))
-  copynumbers[,1:length(bin_files)] <- as.matrix(cns_wide[,4:(length(bin_files)+3)])
-
+  copynumbers <- matrix(NA_real_, nrow=nrow(cns), ncol=n,
+                        dimnames=list(dim_names, selection$sample_id))
+  copynumbers[,1:n] <- as.matrix(cns[,4:(dim(cns)[2]+3)])
   # Create segments array
-  segments <- matrix(NA_real_, nrow=nrow(segs_wide), ncol=length(seg_files),
-                     dimnames=list(dim_names, samples))
-  segments[,1:length(seg_files)] <- as.matrix(segs_wide[,4:(length(seg_files)+3)])
+  segments <- matrix(NA_real_, nrow=nrow(segs), ncol=n,
+                     dimnames=list(dim_names, selection$sample_id))
+  segments[,1:n] <- as.matrix(segs[,4:dim(segs)[2]+3])
+  # bins
+  bins <- matrix(NA_integer_, nrow=nrow(cns_wide), ncol=4,
+                 dimnames=list(dim_names, c('chromosome', 'start', 'end', 'use')))
+  bins[,1:3] <- as.matrix(tbins[,1:3])
+  bins[,4] <- complete.cases(segments)
+  bins <- Biobase::AnnotatedDataFrame(as.data.frame(bins))
+  bins@data$chromosome <- factor(bins@data$chromosome, levels = c(as.character(c(1:22)),'X'))
+  bins@data$start <- as.integer(bins@data$start)
+  bins@data$end <- as.integer(bins@data$end)
+  bins@data$use <- as.logical(bins@data$use)
+
+
+
+  # Assemble QDNAseq object
+  wx_qdnaobj <- new('QDNAseqCopyNumbers', bins=bins, copynumber=copynumbers, phenodata=stats)
+  Biobase::assayDataElement(wx_qdnaobj, "segmented") <- segments
+
+
+
+
+
+
+
 
   # Create bins annotated dataframe
   bins <- matrix(NA_integer_, nrow=nrow(cns_wide), ncol=4,
@@ -222,7 +271,7 @@ BestRelProfile <- function (selection, robjects) {
 }
 
 BestRelProfile(sels, list(QDNA = QD_X, WX = WX_X))
-
+robjects <- list(QDNA = QD_X, WX = WX_X)
 
 
 
