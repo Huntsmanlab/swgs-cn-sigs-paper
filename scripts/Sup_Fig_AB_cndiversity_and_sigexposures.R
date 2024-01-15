@@ -11,9 +11,9 @@ suppressPackageStartupMessages({
 
 # Sup_Fig_A
 # Read in data
-segments <- readRDS(file = '~/Documents/projects/cn_sigs_swgs/copy_number_objects/combined_30kb_Xchr_included/30kb_aCN_comCNVfilt_187_filter_false.rds')
-components <- '~/repos/utanosmodellingdata/component_models/30kb_ovarian/component_models_britroc_aCNs.rds'
-sigsB_path <- '~/repos/utanosmodellingdata/signatures/30kb_ovarian/component_by_signature_britroc_aCNs.rds'
+segments <- readRDS(file = './cn_objects/30kb_aCN_comCNVfilt_187_filter_false.rds')
+components <- './utanosmodellingdata/component_models/30kb_ovarian/component_models_britroc_aCNs.rds'
+sigsB_path <- './utanosmodellingdata/signatures/30kb_ovarian/component_by_signature_britroc_aCNs.rds'
 segments_noX <- segments
 for (i in 1:length(segments)) {
   segments_noX[[i]] <- segments_noX[[i]] %>% dplyr::filter(!(chromosome %in% c('X', 'Y')))
@@ -45,7 +45,7 @@ dev.off()
 
 
 # Sup_Fig_B
-sigsV <- readRDS(file = '~/repos/utanosmodellingdata/signatures/30kb_endometrial/component_by_signature_britmodelsvansigs5_aCNs.rds')
+sigsV <- readRDS(file = './utanosmodellingdata/signatures/30kb_endometrial/component_by_signature_britmodelsvansigs5_aCNs.rds')
 sig_pat_mat <- NMF::scoef(sigsV)
 sig_pat_mat_hq <- NormaliseMatrix(sig_pat_mat)
 
