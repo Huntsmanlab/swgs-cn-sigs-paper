@@ -22,15 +22,15 @@ suppressPackageStartupMessages({
 # Part 1
 # ------
 # Grab Britroc HGSOC signatures so we can get the exposures for the 91 samples used for modelling/creation
-sigsB <- readRDS(file = '~/repos/utanosmodellingdata/signatures/30kb_ovarian/component_by_signature_britroc_aCNs.rds')
+sigsB <- readRDS(file = './utanosmodellingdata/signatures/30kb_ovarian/component_by_signature_britroc_aCNs.rds')
 sig_pat_mat_hq <- NMF::scoef(sigsB)
 reord_britroc <- as.integer(c(2,6,5,4,7,3,1))
 sig_pat_mat_hq <- sig_pat_mat_hq[reord_britroc,]
 sig_pat_mat_hq <- NormaliseMatrix(sig_pat_mat_hq)
 
 # Determine exposures to the lower-quality (2-star) samples
-components <- '~/repos/utanosmodellingdata/component_models/30kb_ovarian/component_models_britroc_aCNs.rds'
-sigsB_path <- '~/repos/utanosmodellingdata/signatures/30kb_ovarian/component_by_signature_britroc_aCNs.rds'
+components <- './utanosmodellingdata/component_models/30kb_ovarian/component_models_britroc_aCNs.rds'
+sigsB_path <- './utanosmodellingdata/signatures/30kb_ovarian/component_by_signature_britroc_aCNs.rds'
 
 # Get annotations for Britroc samples From Macintyre et al. 2018
 # Simplified/copy-pasted code in britrocSampleProcessing.R script
@@ -50,7 +50,7 @@ BrSpBrSigs <- cbind(sig_pat_mat_hq, sig_pat_mat_lq)
 # Part 2
 # ------
 # Determine exposures for all Britroc samples together to p53abn endo signatures
-sigsV_path <- '~/repos/utanosmodellingdata/signatures/30kb_endometrial/component_by_signature_britmodelsvansigs5_aCNs.rds'
+sigsV_path <- './utanosmodellingdata/signatures/30kb_endometrial/component_by_signature_britmodelsvansigs5_aCNs.rds'
 ids <- result %>% filter(star_rating %in% c(2, 3))
 ids <- ids$IM.JBLAB_ID
 hqlq_CN <- all_CN[, colnames(all_CN) %in% ids]
@@ -69,11 +69,11 @@ BrSpVanSigs <- sig_pat_mat
 # Part 3
 # ------
 
-sigsV <- readRDS(file = '~/repos/utanosmodellingdata/signatures/30kb_endometrial/component_by_signature_britmodelsvansigs5_aCNs.rds')
+sigsV <- readRDS(file = './utanosmodellingdata/signatures/30kb_endometrial/component_by_signature_britmodelsvansigs5_aCNs.rds')
 sig_pat_mat <- NMF::scoef(sigsV)
 sig_pat_mat_hq <- NormaliseMatrix(sig_pat_mat)
 
-segs <- readRDS(file = '~/Documents/projects/cn_sigs_swgs/copy_number_objects/combined_30kb_Xchr_included/30kb_aCN_comCNVfilt_187_filter_false.rds')
+segs <- readRDS(file = './cn_objects/combined_30kb_Xchr_included/30kb_aCN_comCNVfilt_187_filter_false.rds')
 segs_lq <- segs[!(names(segs) %in% colnames(sig_pat_mat_hq))]
 sig_pat_mat_lq <- CallSignatureExposures(segs_lq,
                                          component_models = components,
@@ -119,7 +119,7 @@ plotting_data <- VanExposures %>% dplyr::left_join(BrExposures, by = c('sample_i
 rownames(plotting_data) <- plotting_data$sample_ids
 plotting_data$sample_ids <- NULL
 
-write.csv(plotting_data, file = '~/Documents/projects/cn_sigs_swgs/paper_data_and_figures/signatureexposures/agglomerated_exposures_table.csv')
+write.csv(plotting_data, file = './sig_exposures/agglomerated_exposures_table.csv')
 
 
 
@@ -147,7 +147,7 @@ p10 <- alluvial_wide( select(plotting_data[188:304,], max_brenton_sig, max_van_s
         title = element_blank())
 
 # Bar plots Britroc Signatures
-sigs <- readRDS(file = '~/repos/utanosmodellingdata/signatures/30kb_ovarian/component_by_signature_britroc_aCNs.rds')
+sigs <- readRDS(file = './utanosmodellingdata/signatures/30kb_ovarian/component_by_signature_britroc_aCNs.rds')
 reord_britroc <- as.integer(c(2,6,5,4,7,3,1))
 feat_sig_mat <- NMF::basis(sigs)
 feat_sig_mat <- feat_sig_mat[,reord_britroc]
@@ -260,7 +260,7 @@ bp7 <- ggplot(pdat[pdat$sig == 7,], aes(x = interaction(Feature, Distribution),
 
 
 # Bar plots Vancouver Signatures
-signatures <- readRDS(file = '~/repos/utanosmodellingdata/signatures/30kb_endometrial/component_by_signature_britmodelsvansigs5_aCNs.rds')
+signatures <- readRDS(file = './utanosmodellingdata/signatures/30kb_endometrial/component_by_signature_britmodelsvansigs5_aCNs.rds')
 feat_sig_mat <- NMF::basis(signatures)
 colnames(feat_sig_mat) <- paste0("s",1:5)
 sig_feat_mat <- t(feat_sig_mat)

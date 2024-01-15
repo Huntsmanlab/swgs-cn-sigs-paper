@@ -13,9 +13,9 @@ suppressPackageStartupMessages({
 })
 
 # Create MAF file from custom csv for p53abn cn-sigs project
-maff <- readxl::read_xls('~/Downloads/JSB_reclass_finalmutationcalls_p53AbNcohort.xls')
+maff <- readxl::read_xls('./mutation_calls/JSB_reclass_finalmutationcalls_p53AbNcohort.xls')
 
-TPanel_list_samples <- readxl::read_xlsx("~/Downloads/TPanel_list_samples.xlsx")
+TPanel_list_samples <- readxl::read_xlsx("./fig_1/TPanel_list_samples.xlsx")
 TPanel_list_samples <- TPanel_list_samples[-which(TPanel_list_samples$sample_id == 'VOA888A'), ]
 samples_of_interest <- data.frame(TPanel_list_samples$sample_id)
 colnames(samples_of_interest) <- 'Tumor_Sample_Barcode'
@@ -59,13 +59,13 @@ maff = read.maf(maf = maff, vc_nonSyn = c("5'UTR", "Frame_Shift_Del",
                                           "Splice_Site", "Translation_Start_Site",
                                           "InDel"))
 
-CCNE1 <- read.csv("~/Local_Documents/CN_Signatures/outputs/gene_CN_status/CCNE1.csv")
-HER2 <- read.csv("~/Local_Documents/CN_Signatures/outputs/gene_CN_status/HER2.csv")
-cancer_type <- read.csv("~/Local_Documents/CN_Signatures/outputs/cancer_type_rescored_histotypes_187.csv")
-HER2_Track <- readxl::read_xlsx("~/Downloads/HER2_Track_simplified.xlsx")
-ploidy <- read.csv("~/Local_Documents/CN_Signatures/outputs/ploidy_classification_188.csv")
-survival_data <- read.csv("~/Local_Documents/CN_Signatures/outputs/survival_track_Three_Year_PFS_187_rescored.csv")
-tumour_stage <- read.csv("~/Local_Documents/CN_Signatures/outputs/tumour_stage_187.csv")
+CCNE1 <- read.csv("./cn_calls/CCNE1.csv")
+HER2 <- read.csv("./cn_calls/HER2.csv")
+cancer_type <- read.csv("./clinical_data/cancer_type_rescored_histotypes_187.csv")
+HER2_Track <- readxl::read_xlsx("./clinical_data/HER2_Track_simplified.xlsx")
+ploidy <- read.csv("./cn_calls/ploidy_classification_187.csv")
+survival_data <- read.csv("./clinical_data/survival_track_Three_Year_PFS_187_rescored.csv")
+tumour_stage <- read.csv("./clinical_data/tumour_stage_187.csv")
 
 colnames(ploidy)[1] <- 'sample'
 colnames(cancer_type)[1] <- 'sample'

@@ -13,9 +13,9 @@ suppressPackageStartupMessages({
 })
 
 # Create MAF file from custom xls for p53abn cn-sigs project
-maff <- readxl::read_xls('~/Downloads/JSB_reclass_finalmutationcalls_p53AbNcohort.xls')
+maff <- readxl::read_xls('./mutation_calls/JSB_reclass_finalmutationcalls_p53AbNcohort.xls')
 
-TPanel_list_samples <- readxl::read_xlsx("~/Downloads/TPanel_list_samples.xlsx")
+TPanel_list_samples <- readxl::read_xlsx("./clinical_data/TPanel_list_samples.xlsx")
 TPanel_list_samples <- TPanel_list_samples[-which(TPanel_list_samples$sample_id == 'VOA888A'), ]
 samples_of_interest <- data.frame(TPanel_list_samples$sample_id)
 colnames(samples_of_interest) <- 'Tumor_Sample_Barcode'

@@ -8,8 +8,8 @@ library(easyalluvial)
 library(ggplot2)
 
 # Read in the copy-number data and existing signature exposures
-acn_data <- readRDS(file = "~/Downloads/30kb_aCN_comCNVfilt_187_filter_false.rds")
-van_exp <- read.delim(file = "~/Downloads/agglomerated_exposures_table.csv", sep = ",", header = TRUE)
+acn_data <- readRDS(file = "./30kb_aCN_comCNVfilt_187_filter_false.rds")
+van_exp <- read.delim(file = "./agglomerated_exposures_table.csv", sep = ",", header = TRUE)
 
 data("Drews2022_TCGA_Signatures")
 cin_sig_by_comp <- Drews2022_TCGA_Signatures

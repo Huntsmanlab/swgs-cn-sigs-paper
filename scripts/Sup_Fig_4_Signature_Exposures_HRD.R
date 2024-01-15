@@ -1,4 +1,4 @@
-signatures <- read.csv('~/Local_Documents/CN_Signatures/final_sigs/signature_exposures_component_models_britroc_aCNs_component_by_signature_britmodelsvansigs5_aCNs_2023-08-01.csv')
+signatures <- read.csv('./signature_exposures/signature_exposures_component_models_britroc_aCNs_component_by_signature_britmodelsvansigs5_aCNs_2023-08-01.csv')
 
 nsigs <- nrow(signatures)
 long_data <- tidyr::gather(signatures)
@@ -33,11 +33,11 @@ g <- g + ggplot2::theme(plot.title = ggplot2::element_text(size = 12),
                         legend.key.size = unit(0.4, "cm")) +
   ggplot2::coord_flip()
 
-sample <- read.csv("~/Local_Documents/CN_Signatures/data/sample.csv", sep="")
+sample <- read.csv("./clinical_data/sample.csv", sep="")
 
-gene_tracks <- read.csv("~/Downloads/gene_Mutation_187_HRD.csv")
-gene_tracks_targeted_panel_seq <- read.csv("~/Downloads/gene_tracks_targeted_panel_seq_HRD_187.csv")
-ploidy <- read.csv("~/Local_Documents/CN_Signatures/outputs/ploidy_classification_187.csv")
+gene_tracks <- read.csv("./mutation_calls/gene_Mutation_187_HRD.csv")
+gene_tracks_targeted_panel_seq <- read.csv("./mutation_calls/gene_tracks_targeted_panel_seq_HRD_187.csv")
+ploidy <- read.csv("./cn_calls/ploidy_classification_187.csv")
 
 colnames(gene_tracks)[1] <- 'sample'
 colnames(gene_tracks_targeted_panel_seq)[1] <- 'sample'

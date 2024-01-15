@@ -1,4 +1,4 @@
-signatures <- read.csv('~/Local_Documents/CN_Signatures/final_sigs/signature_exposures_component_models_britroc_aCNs_component_by_signature_britroc_aCNs_2023-08-16.csv')
+signatures <- read.csv('./sig_exposures/signature_exposures_component_models_britroc_aCNs_component_by_signature_britroc_aCNs_2023-08-16.csv')
 
 nsigs <- nrow(signatures)
 long_data <- tidyr::gather(signatures)
@@ -31,17 +31,17 @@ g <- g + ggplot2::theme(plot.title = ggplot2::element_text(size = 12),
                         legend.position = "none") +
   ggplot2::coord_flip()
 
-sample <- read.csv("~/Local_Documents/CN_Signatures/data/sample.csv", sep="")
+sample <- read.csv("./clinical_data/sample.csv", sep="")
 
-cancer_type <- read.csv("~/Local_Documents/CN_Signatures/outputs/cancer_type_rescored_histotypes_187.csv")
-gene_tracks <- read.csv("~/Local_Documents/CN_Signatures/outputs/gene_CN_status/X/gene_tracks_187.csv")
-gene_tracks_top_6 <- read.csv("~/Local_Documents/CN_Signatures/outputs/gene_CN_status/X/gene_tracks_top_6_187.csv")
-gene_tracks_targeted_panel_seq <- read.csv("~/Local_Documents/CN_Signatures/outputs/targeted_panel_seq_status/gene_tracks_187_targeted_panel_seq_top_5.csv")
-survival_tracks <- read.csv("~/Local_Documents/CN_Signatures/outputs/survival_track_Three_Year_PFS_187_rescored.csv")
-ploidy <- read.csv("~/Local_Documents/CN_Signatures/outputs/ploidy_classification_187.csv")
-p53abn_MUT <- read.csv("~/Local_Documents/CN_Signatures/outputs/p53abn_mut_188.csv")
-HER2_Track <- readxl::read_xlsx("~/Downloads/HER2_Track_simplified.xlsx")
-tumour_stage <- read.csv("~/Local_Documents/CN_Signatures/outputs/tumour_stage_187.csv")
+cancer_type <- read.csv("./clinical_data/cancer_type_rescored_histotypes_187.csv")
+gene_tracks <- read.csv("./cn_calls/gene_tracks_187.csv")
+gene_tracks_top_6 <- read.csv("./cn_calls/gene_tracks_top_6_187.csv")
+gene_tracks_targeted_panel_seq <- read.csv("./mutation_calls/gene_tracks_187_targeted_panel_seq_top_5.csv")
+survival_tracks <- read.csv("./clinical_data/survival_track_Three_Year_PFS_187_rescored.csv")
+ploidy <- read.csv("./cn_calls/ploidy_classification_187.csv")
+p53abn_MUT <- read.csv("./mutation_calls/p53abn_mut_188.csv")
+HER2_Track <- readxl::read_xlsx("./clinical_data/HER2_Track_simplified.xlsx")
+tumour_stage <- read.csv("./clinical_data/tumour_stage_187.csv")
 
 colnames(cancer_type)[1] <- 'sample'
 colnames(gene_tracks)[1] <- 'sample'
