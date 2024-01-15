@@ -51,5 +51,5 @@ van_vs_cin_plot <- alluvial_wide(data = plot_data, fill_by = "first_variable", s
 plotActivities(object = cin_exp, type = "threshold")
 
 # Save plot(s)
-ggsave(filename = "alluvial_van_vs_cin_sig_exp.png", plot = van_vs_cin_plot, path = "../Output/Reviewers")
+ggsave(filename = "alluvial_van_vs_cin_sig_exp.png", plot = van_vs_cin_plot, path = "../Output/")
 
